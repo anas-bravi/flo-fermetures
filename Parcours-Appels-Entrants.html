@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parcours des appels entrants — Flo Fermetures × Bravi</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  :root {
+    --flo-blue: #1B3A5C;
+    --flo-orange: #E8724A;
+    --flo-light: #F8F6F3;
+    --transfer-red: #D94A4A;
+    --result-yellow: #F5D867;
+    --result-yellow-bg: #FFF9E6;
+    --collect-white: #FFFFFF;
+    --border-light: #E2DDD7;
+    --text-dark: #2C2C2C;
+    --text-muted: #6B6B6B;
+    --bravi-purple: #6C5CE7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--flo-light);
+    color: var(--text-dark);
+    line-height: 1.6;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--flo-blue) 0%, #2A5A8C 100%);
+    color: white;
+    padding: 48px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: rgba(232, 114, 74, 0.1);
+    border-radius: 50%;
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 32px;
+    position: relative;
+    z-index: 1;
+  }
+  .header-brands {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+  .header-brands span { color: var(--flo-orange); }
+  .header h1 {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+  .header p {
+    font-size: 17px;
+    opacity: 0.85;
+    max-width: 600px;
+    font-weight: 300;
+  }
+  .header-meta {
+    margin-top: 24px;
+    display: flex;
+    gap: 32px;
+    font-size: 13px;
+    opacity: 0.65;
+  }
+
+  /* CONTAINER */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* OVERVIEW */
+  .overview {
+    padding: 48px 0;
+  }
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .overview-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid var(--border-light);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .overview-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  }
+  .overview-card .icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 14px;
+  }
+  .overview-card h3 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .overview-card p {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* SECTIONS */
+  .section {
+    padding: 48px 0;
+    border-top: 1px solid var(--border-light);
+  }
+  .section-badge {
+    display: inline-block;
+    background: var(--flo-blue);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    color: var(--flo-blue);
+  }
+  .section-desc {
+    font-size: 15px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+    max-width: 700px;
+  }
+
+  /* FLOW CHARTS */
+  .flow {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border-light);
+  }
+  .flow-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .flow-title .tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .tag-transfer { background: #FDEAEA; color: var(--transfer-red); }
+  .tag-collecte { background: #E8F4FD; color: #2980B9; }
+  .tag-lead { background: #E8F8E8; color: #27AE60; }
+  .tag-task { background: #F0E8F8; color: #8E44AD; }
+  .flow-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+  }
+
+  /* FLOW NODES */
+  .flow-chain {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    flex-wrap: wrap;
+    margin: 16px 0;
+  }
+  .flow-node {
+    padding: 14px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    min-width: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .flow-node small {
+    display: block;
+    font-size: 11px;
+    font-weight: 400;
+    opacity: 0.8;
+    margin-top: 4px;
+  }
+  .node-entry {
+    background: var(--flo-orange);
+    color: white;
+    font-weight: 600;
+  }
+  .node-transfer {
+    background: var(--transfer-red);
+    color: white;
+    font-weight: 600;
+  }
+  .node-collect {
+    background: white;
+    border: 2px solid var(--border-light);
+    color: var(--text-dark);
+  }
+  .node-result {
+    background: var(--result-yellow);
+    color: #5A4E1A;
+    font-weight: 600;
+    border-radius: 20px;
+  }
+  .node-task {
+    background: #F0E8F8;
+    color: #5B2D8E;
+    font-weight: 600;
+    border-radius: 20px;
+  }
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    color: #CCC;
+    font-size: 20px;
+  }
+
+  /* SPLIT FLOWS */
+  .flow-split {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .flow-branch {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    position: relative;
+    padding-left: 24px;
+  }
+  .flow-branch::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 20px;
+    height: 2px;
+    background: #DDD;
+  }
+  .flow-split-label {
+    position: absolute;
+    left: -50px;
+    top: 50%;
+    transform: translateY(-50%);
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  /* CONNECTOR LINE */
+  .flow-branches-wrapper {
+    position: relative;
+    padding-left: 28px;
+  }
+  .flow-branches-wrapper::before {
+    content: '';
+    position: absolute;
+    left: 12px;
+    top: 24px;
+    bottom: 24px;
+    width: 2px;
+    background: #DDD;
+  }
+
+  /* INFO BOX */
+  .info-box {
+    background: #F0F4F8;
+    border-left: 3px solid var(--flo-blue);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .info-box strong { color: var(--text-dark); }
+
+  /* NOTE BOX */
+  .note-box {
+    background: #FFF9E6;
+    border-left: 3px solid var(--result-yellow);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .note-box strong { color: var(--text-dark); }
+
+  /* COMBINED TABLE */
+  .recap-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+    font-size: 13px;
+    margin-top: 24px;
+  }
+  .recap-table thead th {
+    background: var(--flo-blue);
+    color: white;
+    padding: 14px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .recap-table tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #F0EDEA;
+    vertical-align: middle;
+  }
+  .recap-table tbody tr:last-child td { border-bottom: none; }
+  .recap-table tbody tr:hover { background: #FAFAF8; }
+  .badge-transfer {
+    display: inline-block;
+    background: #FDEAEA;
+    color: var(--transfer-red);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+  .badge-collecte {
+    display: inline-block;
+    background: #E8F4FD;
+    color: #2980B9;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+  .badge-task {
+    display: inline-block;
+    background: #F0E8F8;
+    color: #8E44AD;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin: 32px 0;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+  }
+  .legend-swatch {
+    width: 28px;
+    height: 16px;
+    border-radius: 4px;
+  }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    padding: 40px 0;
+    border-top: 1px solid var(--border-light);
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+  .footer strong { color: var(--flo-blue); }
+
+  /* GROUP LIST */
+  .group-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0;
+  }
+  .group-chip {
+    background: #E8F0F8;
+    color: var(--flo-blue);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+
+  /* SERVICE LIST */
+  .service-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0;
+  }
+  .service-chip {
+    background: #F5F3F0;
+    color: var(--text-dark);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border-light);
+  }
+
+  /* OR DIVIDER */
+  .or-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 8px 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+  .or-divider::before, .or-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #DDD;
+  }
+
+  /* MANDATORY DATA BOX */
+  .mandatory-data {
+    background: white;
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    border: 2px solid var(--flo-orange);
+  }
+  .mandatory-data h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--flo-orange);
+    margin-bottom: 12px;
+  }
+  .mandatory-data ul {
+    list-style: none;
+    padding: 0;
+  }
+  .mandatory-data ul li {
+    font-size: 13px;
+    padding: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .mandatory-data ul li::before {
+    content: '●';
+    color: var(--flo-orange);
+    font-size: 8px;
+  }
+
+  /* GLOBAL NOTE */
+  .global-note {
+    background: white;
+    border-radius: 16px;
+    padding: 24px 32px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border-light);
+    border-left: 4px solid var(--bravi-purple);
+  }
+  .global-note h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--bravi-purple);
+    margin-bottom: 8px;
+  }
+  .global-note p {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* CONVERSATION TOGGLE */
+  details.conv-toggle {
+    margin-top: 16px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+  }
+  details.conv-toggle summary {
+    background: #FAFAF8;
+    padding: 12px 18px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--flo-blue);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+    list-style: none;
+  }
+  details.conv-toggle summary::-webkit-details-marker { display: none; }
+  details.conv-toggle summary::before {
+    content: '▶';
+    font-size: 10px;
+    transition: transform 0.2s;
+    color: var(--flo-orange);
+  }
+  details.conv-toggle[open] summary::before { transform: rotate(90deg); }
+  details.conv-toggle summary:hover { background: #F0EDEA; }
+  .conv-body {
+    padding: 20px;
+    background: white;
+    border-top: 1px solid var(--border-light);
+  }
+  .conv-context {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    font-style: italic;
+  }
+  .conv-line {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: flex-start;
+  }
+  .conv-speaker {
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 70px;
+    text-align: right;
+    padding-top: 6px;
+    flex-shrink: 0;
+  }
+  .conv-speaker.flora { color: var(--flo-blue); }
+  .conv-speaker.caller { color: var(--flo-orange); }
+  .conv-bubble {
+    background: #F5F3F0;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    max-width: 600px;
+  }
+  .conv-bubble.flora-bubble {
+    background: #E8F0F8;
+  }
+  .conv-action {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--transfer-red);
+    padding: 6px 0;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  @media print {
+    .header { padding: 32px 0; }
+    .flow { break-inside: avoid; }
+    body { background: white; }
+  }
+
+  @media (max-width: 768px) {
+    .header h1 { font-size: 26px; }
+    .flow-chain { flex-direction: column; align-items: stretch; }
+    .flow-arrow { transform: rotate(90deg); justify-content: center; padding: 4px 0; }
+    .overview-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== HEADER ========== -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-brands">Bravi <span>&times;</span> Flo Fermetures</div>
+    <h1>Parcours des appels entrants</h1>
+    <p>Document de r&eacute;f&eacute;rence pour la configuration de l'assistant vocal et du chatbot &mdash; tous les parcours d&eacute;taill&eacute;s par profil d'appelant.</p>
+    <div class="header-meta">
+      <span>&#x1F4CB; Atelier de cadrage avec Val&eacute;rie Morio</span>
+      <span>&#x1F3ED; Fermetures Loire-Oc&eacute;an (Flo Fermetures)</span>
+      <span>&#x1F4C5; Mis &agrave; jour le 1er avril 2026</span>
+    </div>
+  </div>
+</div>
+
+<!-- ========== OVERVIEW ========== -->
+<div class="container">
+  <div class="overview">
+    <h2 style="font-size:22px; font-weight:800; margin-bottom:4px;">Vue d'ensemble</h2>
+    <p style="color:var(--text-muted); font-size:14px;">L'assistant identifie le profil de l'appelant puis route vers le parcours adapt&eacute;.</p>
+
+    <div class="overview-grid">
+      <div class="overview-card">
+        <div class="icon" style="background:#FFF0EB; color:var(--flo-orange);">&#x1F527;</div>
+        <h3>PRO &mdash; Installateurs</h3>
+        <p>Menuisiers, artisans. Prospect ou client existant avec 9 sous-parcours.</p>
+      </div>
+      <div class="overview-card">
+        <div class="icon" style="background:#E8F8E8; color:#27AE60;">&#x1F3E0;</div>
+        <h3>Particulier</h3>
+        <p>Info produit (d&eacute;pannage, devis, doc technique) ou candidature spontan&eacute;e.</p>
+      </div>
+      <div class="overview-card">
+        <div class="icon" style="background:#E8F0F8; color:#2980B9;">&#x1F4E6;</div>
+        <h3>PRO &mdash; Fournisseur</h3>
+        <p>Prospect ou actif. Identification du service puis collecte ou transfert.</p>
+      </div>
+      <div class="overview-card">
+        <div class="icon" style="background:#F0E8F8; color:#8E44AD;">&#x1F3E2;</div>
+        <h3>Entreprise du groupe</h3>
+        <p>SAFF, CEDMAT, MAINE, SI TECH, PSO, STORIPRO, SERICOB, VENISO, Agents CO.</p>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--flo-orange);"></div> Point d'entr&eacute;e / profil</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--transfer-red);"></div> Transfert d'appel direct</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:white; border:2px solid #DDD;"></div> Collecte de donn&eacute;es</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--result-yellow);"></div> R&eacute;sultat final (mail, t&acirc;che...)</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#F0E8F8;"></div> T&acirc;che destinataire</div>
+    </div>
+  </div>
+
+  <!-- ========== NOTES GLOBALES ========== -->
+  <div class="section">
+    <span class="section-badge">R&egrave;gles g&eacute;n&eacute;rales</span>
+    <h2 class="section-title">Principes transverses</h2>
+    <p class="section-desc">R&egrave;gles applicables &agrave; tous les parcours, valid&eacute;es avec Val&eacute;rie Morio le 1er avril 2026.</p>
+
+    <div class="mandatory-data">
+      <h3>&#x1F4CB; Donn&eacute;es obligatoires &agrave; collecter</h3>
+      <ul>
+        <li><strong>Nom</strong> de l'appelant</li>
+        <li><strong>N&deg; client</strong> OU <strong>nom de domaine</strong> (identifiant du compte)</li>
+        <li><strong>Objet de la demande</strong> (r&eacute;sum&eacute; structur&eacute;)</li>
+        <li><strong>D&eacute;partement</strong> (si routage ADV par sectorisation g&eacute;ographique)</li>
+      </ul>
+    </div>
+
+    <div class="global-note">
+      <h3>&#x2705; Confirmation automatique</h3>
+      <p>Apr&egrave;s chaque collecte de donn&eacute;es, l'assistant confirme syst&eacute;matiquement la prise en charge &agrave; l'appelant : <em>&laquo; On s'occupe de votre demande &raquo;</em>. Cela vaut pour tous les parcours sans exception.</p>
+    </div>
+
+    <div class="global-note">
+      <h3>&#x1F4E7; Notification email parall&egrave;le</h3>
+      <p>Chaque t&acirc;che g&eacute;n&eacute;r&eacute;e par l'assistant envoie &eacute;galement une <strong>notification par email</strong> au destinataire concern&eacute;. Ce double canal (t&acirc;che + email) est pr&eacute;vu pendant une <strong>p&eacute;riode d'adoption de 6 mois</strong>, le temps que l'&eacute;quipe s'habitue au syst&egrave;me de t&acirc;ches.</p>
+    </div>
+  </div>
+
+  <!-- ========== SECTION 1 : INSTALLATEURS ========== -->
+  <div class="section">
+    <span class="section-badge">PRO 1/2</span>
+    <h2 class="section-title">Installateurs / Menuisiers</h2>
+    <p class="section-desc">Professionnel du b&acirc;timent &mdash; prospect ou client existant avec commandes en internes, en attente ou en cours.</p>
+
+    <!-- 1.1 Prospect -->
+    <div class="flow">
+      <div class="flow-title">1.1 Prospect <span class="tag tag-task">T&acirc;che ADV</span></div>
+      <div class="flow-subtitle">Nouveau professionnel qui ne commande pas encore chez Flo.</div>
+      <div class="flow-chain">
+        <div class="flow-node node-entry">PROSPECT<small>nouveau professionnel</small></div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-collect">Collecte des donn&eacute;es<small>qualification, prise de rdv</small></div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-task">&#x1F7E3; T&acirc;che destinataire<br>ADV [d&eacute;partement]</div>
+      </div>
+      <div class="info-box"><strong>Donn&eacute;es collect&eacute;es :</strong> nom, entreprise, besoin, zone g&eacute;ographique, t&eacute;l&eacute;phone, disponibilit&eacute;s rappel.<br><strong>Routage :</strong> 3 ADV avec sectorisation g&eacute;ographique par d&eacute;partement. La t&acirc;che est assign&eacute;e automatiquement &agrave; l'ADV du secteur correspondant.</div>
+      <details class="conv-toggle"><summary>&#x1F4AC; Exemple de conversation &mdash; Prospect</summary><div class="conv-body">
+<div class="conv-context">Mardi 10h &mdash; Un artisan menuisier appelle pour devenir client Flo.</div>
+<div class="conv-line"><div class="conv-speaker caller">Appelant</div><div class="conv-bubble">Bonjour, je suis Thierry Morel de la Menuiserie TM, on m'a parl&eacute; de vos volets roulants, j'aimerais savoir comment travailler avec vous.</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">Bonjour ! Avec plaisir. Pour vous orienter vers la bonne interlocutrice, vous &ecirc;tes dans quel d&eacute;partement ?</div></div>
+<div class="conv-line"><div class="conv-speaker caller">Appelant</div><div class="conv-bubble">Le quarante-quatre, on est &agrave; Saint-Nazaire.</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">Parfait. C'est not&eacute;, je transmets votre demande &agrave; l'assistante commerciale de votre secteur. On s'occupe de votre demande, vous serez recontact&eacute; rapidement.</div></div>
+<div class="conv-action">&rarr; T&acirc;che destinataire : ADV [44]</div>
+</div></details>
+    </div>
+
+    <!-- 1.2 SAV -->
+    <div class="flow">
+      <div class="flow-title">1.2 SAV <span class="tag tag-transfer">Transfert SAV urgent uniquement</span></div>
+      <div class="flow-subtitle">Client existant avec un probl&egrave;me technique &mdash; sur chantier (urgent) ou au bureau (standard). Seul le SAV urgent (chantier) est transf&eacute;r&eacute;.</div>
+
+      <div class="flow-branches-wrapper">
+        <!-- Urgent -->
+        <div class="flow-branch" style="margin-bottom:16px;">
+          <div class="flow-chain" style="margin:0;">
+            <div class="flow-node node-entry" style="min-width:120px;">Sur chantier<small>&#x26A1; URGENCE</small></div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-node node-transfer">&#x1F534; TRANSFERT<br>D'APPEL SAV</div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-node node-collect">Collecte donn&eacute;es<small>+ envoi mail SAV</small></div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-node node-result">&#x1F7E1; Appel trait&eacute;<br>par le SAV</div>
+          </div>
+        </div>
+        <!-- Standard — PAS DE TRANSFERT -->
+        <div class="flow-branch">
+          <div class="flow-chain" style="margin:0;">
+            <div class="flow-node node-entry" style="min-width:120px;">Bureau / Atelier<small>STANDARD</small></div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-node node-collect">Collecte donn&eacute;es<small>compl&egrave;tes</small></div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-node node-task">&#x1F7E3; T&acirc;che destinataire<br>SAV</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box"><strong>Crit&egrave;res d'urgence :</strong> professionnel sur chantier, produit bloqu&eacute;/en panne, client final qui attend. D&eacute;tection par questions ouvertes sans r&eacute;v&eacute;ler les crit&egrave;res.<br><strong>Important :</strong> Les techniciens SAV ne souhaitent pas recevoir d'appels non qualifi&eacute;s. Le SAV standard passe par une collecte compl&egrave;te + t&acirc;che, sans transfert d'appel.</div>
+      <details class="conv-toggle"><summary>&#x1F4AC; Exemple &mdash; SAV urgent (transfert)</summary><div class="conv-body">
+<div class="conv-context">Jeudi 9h30 &mdash; Un installateur sur chantier, volet bloqu&eacute;, client qui attend.</div>
+<div class="conv-line"><div class="conv-speaker caller">Appelant</div><div class="conv-bubble">Bonjour, c'est Thomas Renaud de TRM Fermetures, j'ai un volet qui ne fonctionne plus, je suis chez le client il attend, c'est vraiment urgent.</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">D'accord, vous &ecirc;tes sur le chantier en ce moment ?</div></div>
+<div class="conv-line"><div class="conv-speaker caller">Appelant</div><div class="conv-bubble">Oui oui je suis sur place, le volet est compl&egrave;tement bloqu&eacute;.</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">Tr&egrave;s bien, je vais vous mettre en relation directement avec notre service technique.</div></div>
+<div class="conv-action">&rarr; transferCall() vers SAV</div>
+</div></details>
+      <details class="conv-toggle"><summary>&#x1F4AC; Exemple &mdash; SAV standard (collecte)</summary><div class="conv-body">
+<div class="conv-context">Mardi 14h &mdash; Un pro au bureau, fin de course &agrave; r&eacute;gler, pas urgent.</div>
+<div class="conv-line"><div class="conv-speaker caller">Appelant</div><div class="conv-bubble">Bonjour, c'est Dupuis de la Menuiserie du Lac, j'ai un souci de fin de course sur un volet S40C+, il descend trop bas.</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">D'accord, c'est un probl&egrave;me de r&eacute;glage de fin de course... Est-ce que vous avez votre num&eacute;ro de client ?</div></div>
+<div class="conv-line"><div class="conv-speaker caller">Appelant</div><div class="conv-bubble">Oui, CLT-3291.</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">C'est not&eacute;, notre service technique reviendra vers vous rapidement.</div></div>
+<div class="conv-action">&rarr; T&acirc;che destinataire : SAV (pas de transfert)</div>
+</div></details>
+    </div>
+
+    <!-- 1.3 Devis/Commandes -->
+    <div class="flow">
+      <div class="flow-title">1.3 Devis / Commandes</div>
+      <div class="flow-subtitle">Demande de devis ou commande &mdash; pi&egrave;ces d&eacute;tach&eacute;es ou projet complet.</div>
+
+      <div class="flow-branches-wrapper">
+        <div class="flow-branch" style="margin-bottom:16px;">
+          <div class="flow-chain" style="margin:0;">
+            <div class="flow-node node-entry">Pi&egrave;ces d&eacute;tach&eacute;es</div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-node node-result">&#x1F7E1; G&eacute;n&eacute;ration mail<br>&rarr; Am&eacute;lie</div>
+          </div>
+        </div>
+        <div class="flow-branch">
+          <div class="flow-chain" style="margin:0;">
+            <div class="flow-node node-entry">Projet complet<small>produit complet</small></div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-node node-collect">Collecte des donn&eacute;es</div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-node node-result">&#x1F7E1; Mail ADV<small>par d&eacute;partement</small></div>
+          </div>
+        </div>
+      </div>
+      <details class="conv-toggle"><summary>&#x1F4AC; Exemple &mdash; Pi&egrave;ces d&eacute;tach&eacute;es</summary><div class="conv-body">
+<div class="conv-context">Lundi 11h &mdash; Un installateur a besoin de lames de rechange.</div>
+<div class="conv-line"><div class="conv-speaker caller">Appelant</div><div class="conv-bubble">Bonjour, j'aurais besoin de lames de rechange pour un S40C+, c'est la r&eacute;f&eacute;rence LM-S40-210.</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">Bien s&ucirc;r, une commande de lames. Est-ce que vous avez votre num&eacute;ro de client ?</div></div>
+<div class="conv-line"><div class="conv-speaker caller">Appelant</div><div class="conv-bubble">CLT-5621.</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">C'est not&eacute;, je transmets votre demande.</div></div>
+<div class="conv-action">&rarr; T&acirc;che destinataire : Am&eacute;lie</div>
+</div></details>
+    </div>
+
+    <!-- 1.4 Info commerciale -->
+    <div class="flow">
+      <div class="flow-title">1.4 Info commerciale <span class="tag tag-task">T&acirc;che ADV</span></div>
+      <div class="flow-subtitle">Demande d'informations commerciales (tarifs, gammes, disponibilit&eacute;s).</div>
+      <div class="flow-chain">
+        <div class="flow-node node-entry">INFO<br>COMMERCIALE</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-collect">Collecte des donn&eacute;es</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-task">&#x1F7E3; T&acirc;che destinataire<br>ADV [d&eacute;partement]</div>
+      </div>
+      <details class="conv-toggle"><summary>&#x1F4AC; Exemple &mdash; Acc&egrave;s espace pro</summary><div class="conv-body">
+<div class="conv-context">Mercredi 9h &mdash; Un pro n'arrive pas &agrave; se connecter &agrave; son espace.</div>
+<div class="conv-line"><div class="conv-speaker caller">Appelant</div><div class="conv-bubble">Bonjour, c'est Roux de Alu Services, j'arrive plus &agrave; me connecter &agrave; l'espace pro, mon mot de passe ne fonctionne plus.</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">D'accord, un probl&egrave;me d'acc&egrave;s &agrave; l'espace pro. Vous &ecirc;tes dans quel d&eacute;partement ?</div></div>
+<div class="conv-line"><div class="conv-speaker caller">Appelant</div><div class="conv-bubble">Le 85.</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">C'est not&eacute;, je transmets &agrave; l'assistante commerciale de votre secteur. On s'occupe de votre demande.</div></div>
+<div class="conv-action">&rarr; T&acirc;che destinataire : ADV [85]</div>
+</div></details>
+    </div>
+
+    <!-- 1.5 Dans commandes -->
+    <div class="flow">
+      <div class="flow-title">1.5 Commandes en cours <span class="tag tag-collecte">Clients existants</span></div>
+      <div class="flow-subtitle">Client existant avec une commande en cours &mdash; pi&egrave;ces ou produit complet.</div>
+
+      <div class="flow-branches-wrapper">
+        <div class="flow-branch" style="margin-bottom:16px;">
+          <div class="flow-chain" style="margin:0;">
+            <div class="flow-node node-entry">Pi&egrave;ces d&eacute;tach&eacute;es</div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-node node-result">&#x1F7E1; Mail &rarr; Am&eacute;lie</div>
+          </div>
+        </div>
+        <div class="flow-branch">
+          <div class="flow-chain" style="margin:0;">
+            <div class="flow-node node-entry">Produit complet</div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-node node-result">&#x1F7E1; Mail ADV<small>par d&eacute;partement</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1.6 Délais -->
+    <div class="flow">
+      <div class="flow-title">1.6 D&eacute;lais de livraison <span class="tag tag-transfer">Transfert ADV</span></div>
+      <div class="flow-subtitle">Client existant demandant des d&eacute;lais sur une commande.</div>
+      <div class="flow-chain">
+        <div class="flow-node node-entry">D&Eacute;LAIS DE<br>LIVRAISON</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-transfer">&#x1F534; TRANSFERT<br>ADV</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-collect">Collecte des donn&eacute;es</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-task">&#x1F7E3; T&acirc;che destinataire<br>Am&eacute;lie<small>si ADV indispo</small></div>
+      </div>
+      <details class="conv-toggle"><summary>&#x1F4AC; Exemple &mdash; D&eacute;lais de livraison</summary><div class="conv-body">
+<div class="conv-context">Jeudi 15h &mdash; Un client veut savoir quand sa commande arrive.</div>
+<div class="conv-line"><div class="conv-speaker caller">Appelant</div><div class="conv-bubble">Bonjour, Bouvier d'Habitat Plus, j'appelle pour savoir o&ugrave; en est ma commande FLO-2026-04512, &ccedil;a fait trois semaines.</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">Je vais essayer de vous mettre en relation avec l'assistante commerciale de votre secteur... Vous &ecirc;tes dans quel d&eacute;partement ?</div></div>
+<div class="conv-line"><div class="conv-speaker caller">Appelant</div><div class="conv-bubble">Le quarante-neuf.</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">L'assistante n'est pas disponible, mais ne vous inqui&eacute;tez pas, je note votre demande. On s'occupe de &ccedil;a, vous serez rappel&eacute; rapidement.</div></div>
+<div class="conv-action">&rarr; T&acirc;che destinataire : Am&eacute;lie (ADV indispo)</div>
+</div></details>
+    </div>
+
+    <!-- 1.7 Infos -->
+    <div class="flow">
+      <div class="flow-title">1.7 Infos / R&eacute;clamation</div>
+      <div class="flow-subtitle">Demande d'information g&eacute;n&eacute;rale ou r&eacute;clamation.</div>
+      <div class="flow-chain">
+        <div class="flow-node node-entry">INFOS<small>r&eacute;clamations, renseignements</small></div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-collect">Collecte des donn&eacute;es</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-task">&#x1F7E3; T&acirc;che destinataire<br>Am&eacute;lie</div>
+      </div>
+      <details class="conv-toggle"><summary>&#x1F4AC; Exemple &mdash; R&eacute;clamation</summary><div class="conv-body">
+<div class="conv-context">Mardi 11h &mdash; Un client m&eacute;content d'un d&eacute;lai non respect&eacute;.</div>
+<div class="conv-line"><div class="conv-speaker caller">Appelant</div><div class="conv-bubble">Bonjour, Lemaire de Fermetures 72, j'avais une livraison pr&eacute;vue la semaine derni&egrave;re et je n'ai toujours rien re&ccedil;u.</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">Je comprends, c'est emb&ecirc;tant. Est-ce que vous avez votre num&eacute;ro de commande ?</div></div>
+<div class="conv-line"><div class="conv-speaker caller">Appelant</div><div class="conv-bubble">FLO-2026-05123.</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">C'est not&eacute;. Je transmets imm&eacute;diatement votre demande, on s'occupe de &ccedil;a.</div></div>
+<div class="conv-action">&rarr; T&acirc;che destinataire : Am&eacute;lie (priorit&eacute; HIGH)</div>
+</div></details>
+    </div>
+
+    <!-- 1.8 Compta -->
+    <div class="flow">
+      <div class="flow-title">1.8 Comptabilit&eacute; <span class="tag tag-transfer">Transfert Compta</span></div>
+      <div class="flow-subtitle">Demande comptable &mdash; facture, r&egrave;glement, avoir.</div>
+      <div class="flow-chain">
+        <div class="flow-node node-entry">COMPTA<small>facture, r&egrave;glement, avoir</small></div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-transfer">&#x1F534; TRANSFERT<br>COMPTA (Lionel)</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-collect">Collecte des donn&eacute;es</div>
+      </div>
+      <details class="conv-toggle"><summary>&#x1F4AC; Exemple &mdash; Comptabilit&eacute;</summary><div class="conv-body">
+<div class="conv-context">Jeudi 14h &mdash; Un client a une question sur une facture.</div>
+<div class="conv-line"><div class="conv-speaker caller">Appelant</div><div class="conv-bubble">Bonjour, c'est Martin de l'entreprise Fen&ecirc;tres Ouest, j'ai un souci sur ma facture du mois dernier, il y a un &eacute;cart de montant.</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">D'accord, un &eacute;cart sur une facture. Je vais essayer de vous mettre en relation avec notre service comptabilit&eacute;...</div></div>
+<div class="conv-action">&rarr; transferCall() vers Compta (Lionel)</div>
+</div></details>
+    </div>
+
+    <!-- 1.9 Marketing -->
+    <div class="flow">
+      <div class="flow-title">1.9 Marketing / Communication <span class="tag tag-transfer">Transfert direct</span></div>
+      <div class="flow-subtitle">Demande li&eacute;e au marketing ou &agrave; la communication.</div>
+      <div class="flow-chain">
+        <div class="flow-node node-entry">MARKETING<br>/ COM</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-transfer">&#x1F534; TRANSFERT<br>DIRECT</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-collect">Collecte des donn&eacute;es</div>
+      </div>
+      <details class="conv-toggle"><summary>&#x1F4AC; Exemple &mdash; Marketing</summary><div class="conv-body">
+<div class="conv-context">Lundi 10h &mdash; Un installateur demande de la PLV pour son showroom.</div>
+<div class="conv-line"><div class="conv-speaker caller">Appelant</div><div class="conv-bubble">Bonjour, c'est Giraud de M&eacute;nui 49, on am&eacute;nage notre showroom et on aimerait avoir des PLV Flo Fermetures, des affiches, des &eacute;chantillons.</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">Avec plaisir, je vais essayer de vous mettre en relation avec notre service marketing...</div></div>
+<div class="conv-action">&rarr; transferCall() vers Marketing/COM</div>
+</div></details>
+    </div>
+  </div>
+
+  <!-- ========== SECTION 2 : PARTICULIER ========== -->
+  <div class="section">
+    <span class="section-badge">Particulier</span>
+    <h2 class="section-title">Particulier</h2>
+    <p class="section-desc">Visiteur ou appelant non professionnel &mdash; demande d'information produit ou candidature spontan&eacute;e.</p>
+
+    <!-- 2.1 Info produit -->
+    <div class="flow">
+      <div class="flow-title">2.1 Info produit <span class="tag tag-lead">Lead</span></div>
+      <div class="flow-subtitle">D&eacute;pannage, devis ou documentation technique.</div>
+      <div class="flow-chain">
+        <div class="flow-node node-entry">INFO PRODUIT<small>d&eacute;pannage &bull; devis &bull; doc technique</small></div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-collect">Collecte des donn&eacute;es<small>nom, localisation, besoin, t&eacute;l.</small></div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-result">&#x1F7E1; G&Eacute;N&Eacute;RATION<br>LEAD</div>
+      </div>
+      <div class="info-box">Flo Fermetures distribue via un r&eacute;seau d'installateurs partenaires &rarr; orientation vers un professionnel proche, <strong>sans obligation d'achat</strong>.</div>
+      <details class="conv-toggle"><summary>&#x1F4AC; Exemple &mdash; Particulier cherche installateur</summary><div class="conv-body">
+<div class="conv-context">Mercredi 14h &mdash; Un particulier cherche un installateur de volets dans le 44.</div>
+<div class="conv-line"><div class="conv-speaker caller">Appelante</div><div class="conv-bubble">Bonjour, je voudrais installer des volets roulants chez moi, est-ce que vous pouvez m'orienter vers un installateur dans le quarante-quatre ?</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">Bien s&ucirc;r, nos produits sont distribu&eacute;s par un r&eacute;seau d'installateurs partenaires. Je peux transmettre votre demande pour qu'on vous oriente vers un professionnel proche de chez vous, sans aucune obligation bien s&ucirc;r. Est-ce que je peux avoir votre nom ?</div></div>
+<div class="conv-line"><div class="conv-speaker caller">Appelante</div><div class="conv-bubble">Sophie Legrand.</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">C'est not&eacute;, on s'occupe de votre demande.</div></div>
+<div class="conv-action">&rarr; G&eacute;n&eacute;ration de lead</div>
+</div></details>
+    </div>
+
+    <!-- 2.2 Candidature -->
+    <div class="flow">
+      <div class="flow-title">2.2 Candidature spontan&eacute;e</div>
+      <div class="flow-subtitle">Personne cherchant un emploi chez Flo Fermetures.</div>
+      <div class="flow-chain">
+        <div class="flow-node node-entry">CANDIDATURE<br>SPONTAN&Eacute;E</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-result" style="font-size:14px;">&#x1F7E1; rh@flo-fermetures.fr</div>
+      </div>
+      <details class="conv-toggle"><summary>&#x1F4AC; Exemple &mdash; Candidature spontan&eacute;e</summary><div class="conv-body">
+<div class="conv-context">Mercredi 11h &mdash; Une personne appelle pour postuler.</div>
+<div class="conv-line"><div class="conv-speaker caller">Appelante</div><div class="conv-bubble">Bonjour, j'appelle pour savoir si vous recrutez en ce moment.</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">Pour les candidatures, je vous invite &agrave; envoyer votre CV et lettre de motivation &agrave; l'adresse R H arobase flo tiret fermetures point FR.</div></div>
+<div class="conv-line"><div class="conv-speaker caller">Appelante</div><div class="conv-bubble">Vous pouvez me r&eacute;p&eacute;ter l'adresse ?</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">Oui bien s&ucirc;r. C'est R H... arobase... flo... tiret... fermetures... point... F R. Bonne chance dans vos d&eacute;marches !</div></div>
+<div class="conv-action">&rarr; Orientation vers rh@flo-fermetures.fr</div>
+</div></details>
+    </div>
+  </div>
+
+  <!-- ========== SECTION 3 : FOURNISSEUR ========== -->
+  <div class="section">
+    <span class="section-badge">PRO 2/2</span>
+    <h2 class="section-title">Fournisseur</h2>
+    <p class="section-desc">Fournisseur prospect ou actif souhaitant contacter un service interne de Flo.</p>
+
+    <div class="flow">
+      <div class="flow-title">3.1 Fournisseur prospect</div>
+      <div class="flow-subtitle">Nouveau fournisseur souhaitant proposer ses services.</div>
+      <div class="flow-chain">
+        <div class="flow-node node-entry">FOURNISSEUR<br>PROSPECT</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-collect">Identifier le service<small>concern&eacute;</small></div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-collect">Collecte donn&eacute;es<small>fournisseur</small></div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-collect">Communiquer l'adresse<br>mail du service<small>au fournisseur</small></div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-result">&#x1F7E1; Mail vers le<br>service concern&eacute;</div>
+      </div>
+      <div style="margin-top:12px;">
+        <strong style="font-size:12px; color:var(--text-muted);">Services disponibles :</strong>
+        <div class="service-list">
+          <span class="service-chip">BE (Bureau d'&Eacute;tudes)</span>
+          <span class="service-chip">Budget</span>
+          <span class="service-chip">Compta</span>
+          <span class="service-chip">R&amp;I</span>
+          <span class="service-chip">Maintenance</span>
+          <span class="service-chip">Marketing</span>
+          <span class="service-chip">Achats / Appro</span>
+        </div>
+      </div>
+      <details class="conv-toggle"><summary>&#x1F4AC; Exemple &mdash; Fournisseur prospect</summary><div class="conv-body">
+<div class="conv-context">Mardi 10h30 &mdash; Un fournisseur de composants veut proposer ses produits.</div>
+<div class="conv-line"><div class="conv-speaker caller">Appelant</div><div class="conv-bubble">Bonjour, je suis Jean-Pierre Martel de la soci&eacute;t&eacute; Alum'Pro, on fournit des profil&eacute;s aluminium et on aimerait proposer nos produits &agrave; Flo Fermetures.</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">Tr&egrave;s bien, c'est pour notre service achats. Je vais transmettre votre demande. Si vous le souhaitez, vous pouvez aussi envoyer un mail avec votre documentation &agrave; achats arobase flo tiret fermetures point FR.</div></div>
+<div class="conv-line"><div class="conv-speaker caller">Appelant</div><div class="conv-bubble">Parfait, merci.</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">C'est not&eacute;, on transmet votre demande. Tr&egrave;s bonne journ&eacute;e.</div></div>
+<div class="conv-action">&rarr; T&acirc;che service Achats + email communiqu&eacute;</div>
+</div></details>
+    </div>
+
+    <div class="flow">
+      <div class="flow-title">3.2 Fournisseur actif <span class="tag tag-transfer">Transfert SYST&Eacute;MATIQUE</span></div>
+      <div class="flow-subtitle">Fournisseur existant qui travaille d&eacute;j&agrave; avec Flo &mdash; transfert par d&eacute;faut vers le service demand&eacute;.</div>
+      <div class="flow-chain">
+        <div class="flow-node node-entry">FOURNISSEUR<br>ACTIF</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-collect">Identifier le service</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-transfer">&#x1F534; TRANSFERT<br>SYST&Eacute;MATIQUE<small>vers le service</small></div>
+      </div>
+      <div class="or-divider">SI SERVICE INDISPONIBLE</div>
+      <div class="flow-chain" style="margin-top:0;">
+        <div class="flow-node node-collect">Collecte donn&eacute;es</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-result">&#x1F7E1; Mail service concern&eacute;</div>
+      </div>
+      <details class="conv-toggle"><summary>&#x1F4AC; Exemple &mdash; Fournisseur actif (transfert)</summary><div class="conv-body">
+<div class="conv-context">Mercredi 9h &mdash; Un fournisseur r&eacute;f&eacute;renc&eacute; veut joindre son contact habituel.</div>
+<div class="conv-line"><div class="conv-speaker caller">Appelant</div><div class="conv-bubble">Bonjour, c'est Leroy de la soci&eacute;t&eacute; TransPack, on travaille d&eacute;j&agrave; avec vous, j'aurais besoin de joindre le service logistique.</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">Tr&egrave;s bien, je vais vous mettre en relation avec le service logistique.</div></div>
+<div class="conv-action">&rarr; transferCall() syst&eacute;matique vers Logistique</div>
+</div></details>
+    </div>
+  </div>
+
+  <!-- ========== SECTION 4 : ENTREPRISE DU GROUPE ========== -->
+  <div class="section">
+    <span class="section-badge">PRO 2/2</span>
+    <h2 class="section-title">Entreprise du groupe / Agents CO</h2>
+    <p class="section-desc">Collaborateur d'une entreprise du groupe Bouyer Leroux ou agent commercial.</p>
+
+    <div class="flow">
+      <div class="flow-title">4.1 Entreprise du groupe Bouyer Leroux <span class="tag tag-transfer">Transfert possible</span></div>
+      <div class="flow-subtitle">Collaborateur d'une soci&eacute;t&eacute; s&oelig;ur au sein du groupe &mdash; demande toujours une personne nomm&eacute;e.</div>
+
+      <div style="margin-bottom:16px;">
+        <strong style="font-size:12px; color:var(--text-muted);">Entreprises du groupe :</strong>
+        <div class="group-list">
+          <span class="group-chip">SAFF</span>
+          <span class="group-chip">CEDMAT</span>
+          <span class="group-chip">MAINE</span>
+          <span class="group-chip">SI TECH</span>
+          <span class="group-chip">PSO</span>
+          <span class="group-chip">STORIPRO</span>
+          <span class="group-chip">SERICOB</span>
+          <span class="group-chip">VENISO</span>
+        </div>
+      </div>
+
+      <div class="flow-chain">
+        <div class="flow-node node-entry">ENTREPRISE<br>DU GROUPE</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-collect">Identifier la<br>PERSONNE NOMM&Eacute;E<small>demandent quelqu'un par nom</small></div>
+      </div>
+      <div class="info-box"><strong>Sp&eacute;cificit&eacute; :</strong> Les appelants des entreprises du groupe demandent une <strong>personne pr&eacute;cise par son nom</strong>, et non un service g&eacute;n&eacute;rique. L'assistant doit identifier le nom de la personne demand&eacute;e.</div>
+      <div class="or-divider">PUIS</div>
+      <div class="flow-chain" style="margin-top:0;">
+        <div class="flow-node node-transfer">&#x1F534; TRANSFERT D'APPEL<br>vers la personne</div>
+        <div class="flow-arrow" style="font-size:14px;">ou</div>
+        <div class="flow-node node-result">&#x1F7E1; COLLECTE DONN&Eacute;ES<br>+ t&acirc;che destinataire personne</div>
+      </div>
+      <details class="conv-toggle"><summary>&#x1F4AC; Exemple &mdash; Entreprise du groupe</summary><div class="conv-body">
+<div class="conv-context">Jeudi 14h &mdash; Un collaborateur de CEDMAT veut joindre Lionel.</div>
+<div class="conv-line"><div class="conv-speaker caller">Appelante</div><div class="conv-bubble">Bonjour, c'est Nathalie Durand de CEDMAT, j'aurais besoin de joindre Lionel &agrave; la comptabilit&eacute;.</div></div>
+<div class="conv-line"><div class="conv-speaker flora">Flora</div><div class="conv-bubble flora-bubble">Tr&egrave;s bien, je vais essayer de vous mettre en relation avec Lionel.</div></div>
+<div class="conv-action">&rarr; transferCall() vers Lionel (personne nomm&eacute;e)</div>
+</div></details>
+    </div>
+
+    <div class="flow">
+      <div class="flow-title">4.2 Agents commerciaux</div>
+      <div class="flow-subtitle">Agents CO &mdash; liste &agrave; venir. M&ecirc;me parcours que les entreprises du groupe.</div>
+      <div class="flow-chain">
+        <div class="flow-node node-entry">AGENTS CO<small>liste &agrave; venir</small></div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-collect">Identifier la personne</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-node node-transfer">&#x1F534; Transfert</div>
+        <div class="flow-arrow" style="font-size:14px;">ou</div>
+        <div class="flow-node node-result">&#x1F7E1; Collecte + t&acirc;che</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== TABLEAU RÉCAPITULATIF ========== -->
+  <div class="section">
+    <span class="section-badge">Synth&egrave;se</span>
+    <h2 class="section-title">Tableau r&eacute;capitulatif</h2>
+    <p class="section-desc">Vue consolid&eacute;e de tous les parcours avec l'action de l'IA, le destinataire et le r&eacute;sultat attendu.</p>
+
+    <table class="recap-table">
+      <thead>
+        <tr>
+          <th>Profil</th>
+          <th>Demande</th>
+          <th>Action IA</th>
+          <th>Destinataire</th>
+          <th>R&eacute;sultat</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Installateur prospect</td>
+          <td>Nouveau contact</td>
+          <td><span class="badge-collecte">Collecte</span></td>
+          <td>ADV [d&eacute;partement]</td>
+          <td>T&acirc;che destinataire ADV</td>
+        </tr>
+        <tr>
+          <td>Installateur client</td>
+          <td>SAV urgent (chantier)</td>
+          <td><span class="badge-transfer">Transfert SAV</span></td>
+          <td>Service technique</td>
+          <td>Appel trait&eacute; + mail SAV</td>
+        </tr>
+        <tr>
+          <td>Installateur client</td>
+          <td>SAV standard (bureau)</td>
+          <td><span class="badge-collecte">Collecte</span></td>
+          <td>SAV</td>
+          <td>T&acirc;che destinataire SAV</td>
+        </tr>
+        <tr>
+          <td>Installateur client</td>
+          <td>Pi&egrave;ces d&eacute;tach&eacute;es</td>
+          <td><span class="badge-collecte">Collecte</span></td>
+          <td>Am&eacute;lie</td>
+          <td>Mail Am&eacute;lie</td>
+        </tr>
+        <tr>
+          <td>Installateur client</td>
+          <td>Projet / Produit complet</td>
+          <td><span class="badge-collecte">Collecte</span></td>
+          <td>ADV [d&eacute;partement]</td>
+          <td>Mail ADV par d&eacute;partement</td>
+        </tr>
+        <tr>
+          <td>Installateur client</td>
+          <td>Info commerciale</td>
+          <td><span class="badge-collecte">Collecte</span></td>
+          <td>ADV [d&eacute;partement]</td>
+          <td>T&acirc;che destinataire ADV</td>
+        </tr>
+        <tr>
+          <td>Client existant</td>
+          <td>D&eacute;lais livraison</td>
+          <td><span class="badge-transfer">Transfert ADV</span></td>
+          <td>ADV / Am&eacute;lie</td>
+          <td>T&acirc;che Am&eacute;lie (si ADV indispo)</td>
+        </tr>
+        <tr>
+          <td>Client existant</td>
+          <td>Infos / R&eacute;clamation</td>
+          <td><span class="badge-collecte">Collecte</span></td>
+          <td>Am&eacute;lie</td>
+          <td>T&acirc;che destinataire Am&eacute;lie</td>
+        </tr>
+        <tr>
+          <td>Client existant</td>
+          <td>Comptabilit&eacute;</td>
+          <td><span class="badge-transfer">Transfert Compta</span></td>
+          <td>Lionel</td>
+          <td>Collecte</td>
+        </tr>
+        <tr>
+          <td>Client existant</td>
+          <td>Marketing / COM</td>
+          <td><span class="badge-transfer">Transfert direct</span></td>
+          <td>Marketing</td>
+          <td>Collecte</td>
+        </tr>
+        <tr>
+          <td>Particulier</td>
+          <td>Info produit / Devis</td>
+          <td><span class="badge-collecte">Collecte</span></td>
+          <td>Commercial</td>
+          <td>Lead</td>
+        </tr>
+        <tr>
+          <td>Particulier</td>
+          <td>Candidature</td>
+          <td><span class="badge-collecte">Orientation</span></td>
+          <td>RH</td>
+          <td>rh@flo-fermetures.fr</td>
+        </tr>
+        <tr>
+          <td>Fournisseur prospect</td>
+          <td>Proposition</td>
+          <td><span class="badge-collecte">Collecte</span></td>
+          <td>Service concern&eacute;</td>
+          <td>Communiquer mail + mail service</td>
+        </tr>
+        <tr>
+          <td>Fournisseur actif</td>
+          <td>Contact service</td>
+          <td><span class="badge-transfer">Transfert syst&eacute;matique</span></td>
+          <td>Service concern&eacute;</td>
+          <td>Transfert (collecte si indispo)</td>
+        </tr>
+        <tr>
+          <td>Entreprise groupe</td>
+          <td>Contact personne nomm&eacute;e</td>
+          <td><span class="badge-transfer">Transfert</span> / <span class="badge-collecte">Collecte</span></td>
+          <td>Personne demand&eacute;e</td>
+          <td>Transfert ou t&acirc;che</td>
+        </tr>
+        <tr>
+          <td>Agent CO</td>
+          <td>Contact personne nomm&eacute;e</td>
+          <td><span class="badge-transfer">Transfert</span> / <span class="badge-collecte">Collecte</span></td>
+          <td>Personne demand&eacute;e</td>
+          <td>Transfert ou t&acirc;che</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ========== FOOTER ========== -->
+  <div class="footer">
+    <p>Document r&eacute;alis&eacute; par <strong>Bravi</strong> &agrave; partir des parcours d&eacute;finis lors des ateliers de cadrage avec <strong>Val&eacute;rie Morio</strong> et <strong>Am&eacute;lie Linard</strong> &mdash; Flo Fermetures (Fermetures Loire-Oc&eacute;an).</p>
+    <p style="margin-top:8px;">Derni&egrave;re mise &agrave; jour : 1er avril 2026.</p>
+  </div>
+
+</div>
+
+</body>
+</html>
